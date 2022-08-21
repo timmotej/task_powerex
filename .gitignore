@@ -1,2 +1,3 @@
 *.swp
 *.swo
+aws*.env

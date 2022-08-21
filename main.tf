@@ -10,8 +10,11 @@ terraform {
 }
 
 provider "aws" {
-  profile    = "default"
-  region     = "us-east-1"
+  # all is defined in env variables in image
+  #profile    = "default"
+  #access_key = $AWS_ACCESS_KEY_ID
+  #secret_key = $AWS_SECRET_ACCESS_KEY
+  #region     = $AWS_DEFAULT_REGION
 }
 
 resource "aws_s3_bucket" "input_bucket" {
