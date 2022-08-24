@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "output_bucket" {
 }
 
 resource "aws_ecr_repository" "pwx" {
-  name                 = "entry"
+  name                 = "pwx/entry"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
