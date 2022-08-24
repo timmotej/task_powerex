@@ -15,8 +15,7 @@ jobs:
         docker build . --file lambda.Dockerfile --tag lambda-local:test
         docker run -d --name lambda-local -p 8080:9000 lambda-local:test
         docker ps -a
-        docker ps -a | grep -i running || sleep 10
-        docker ps -a | grep -i running || sleep 10
+        sleep 10
         curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
         docker ps -a
         docker logs lambda-local
