@@ -7,7 +7,8 @@ COPY app/ ${LAMBDA_TASK_ROOT}
 # from your project folder.
 WORKDIR ${LAMBDA_TASK_ROOT}
 
-RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
+RUN python3 -m pip install -U pip && \
+    pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
 CMD [ "lambda_function.lambda_handler" ]
