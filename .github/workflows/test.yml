@@ -1,0 +1,22 @@
+name: Test images locally
+
+on: push
+
+jobs:
+
+  test-build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: |
+        docker build . --file lambda.Dockerfile --tag lambda-local:test
+        docker run -d --name lambda-local -p 8080:9000 lambda-local:test
+        curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
+        docker ps -a
+        docker logs lambda-local
+        docker stop lambda-local
+        docker rm lambda-local
+
