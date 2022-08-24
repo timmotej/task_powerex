@@ -34,3 +34,17 @@ resource "aws_s3_bucket" "output_bucket" {
     Environment = "test"
   }
 }
+
+resource "aws_ecr_repository" "pwx" {
+  name                 = "pwx/entry"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+#
+#data "aws_ecr_image" "lambda_s3_move_on_coming" {
+#  repository_name = "pwx/entry"
+#  image_tag       = "0.0.1"
+#}

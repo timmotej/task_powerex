@@ -9,12 +9,12 @@ services:
       - tfnet
     stdin_open: true
     tty: true
-    environment:
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
-      - AWS_DEFAULT_REGION
+    #    environment:
+    #      - AWS_ACCESS_KEY_ID
+    #      - AWS_SECRET_ACCESS_KEY
+    #      - AWS_DEFAULT_REGION
     env_file:
-      - aws.env
+      - ./aws.env
     entrypoint: /bin/bash
 
 networks:
