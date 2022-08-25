@@ -9,9 +9,9 @@ provider aws {
 data aws_caller_identity current {}
  
 locals {
- prefix = "pwx/"
+ prefix = "pwx"
  account_id          = data.aws_caller_identity.current.account_id
- ecr_repository_name = "${local.prefix}s3_move_lambda"
+ ecr_repository_name = "${local.prefix}_s3_move_lambda"
  ecr_image_tag       = "latest"
 }
  
@@ -113,5 +113,5 @@ resource aws_lambda_function s3_move_rename{
 }
  
 output "lambda_name" {
- value = aws_lambda_function.git.id
+  value = aws_lambda_function.s3_move_rename.id
 }
