@@ -18,33 +18,20 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "bucket1" {
-
-bucket = var.bucket_name
-
-tags = {
-
-Name = "ExampleS3Bucket"
-
-}
-
+  bucket = var.bucket_name
+  tags = {
+    Name = "ExampleS3Bucket"
+  }
 }
 
 resource "aws_s3_bucket_acl" "bucket1" {
-
-bucket = var.bucket_name
-
-acl = "private"
-
+  bucket = var.bucket_name
+  acl = "private"
 }
 
 resource "aws_s3_bucket_versioning" "bucket_versioning" {
-
-bucket = var.bucket_name
-
-versioning_configuration {
-
-status = "Enabled"
-
-}
-
+  bucket = var.bucket_name
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
