@@ -13,18 +13,10 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
-      - name: check where we are
-        run: |
-          echo ${{ secrets.CHECK }} >> t.env
-          ls -las 
-          pwd
-          cat t.env
-          ls -las ..
-          rm t.env
       - name: Deploy tf structure
         run: |
           echo 'The triggering workflow passed'
-          docker build -t tf-deploy .
+          docker build -t terraform_infrastructure terraform
           docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} tf-deploy apply -auto-approve -input=false -json
   on-failure:
     runs-on: ubuntu-latest
