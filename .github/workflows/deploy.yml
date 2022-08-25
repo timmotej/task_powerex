@@ -23,3 +23,5 @@ jobs:
       - name: Error tests workflow
         run: |
           echo 'The triggering workflow failed'
+          echo 'This workflow now ends with failure too'
+          exit 1
