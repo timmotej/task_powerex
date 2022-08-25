@@ -13,11 +13,14 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
+      - name: check where we are
+        run: |
+          ls -las 
+          pwd
+          ls -las ..
       - name: Deploy tf structure
         run: |
           echo 'The triggering workflow passed'
-          ls -las
-          ls -las ..
           docker build -t tf-deploy .
           docker run -t tf-deploy apply -auto-approve -input=false -json
   on-failure:
