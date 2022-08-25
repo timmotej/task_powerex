@@ -8,7 +8,7 @@ default = "us-east-1"
 
 variable "bucket_name" {
 
-description = “A unique name for the bucket”
+description = "A unique name for the bucket"
 
 default = "backend"
 
