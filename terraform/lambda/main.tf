@@ -15,9 +15,9 @@ locals {
  ecr_image_tag       = "latest"
 }
  
-#resource aws_ecr_repository repo {
-# name = local.ecr_repository_name
-#}
+data aws_ecr_repository repo {
+ name = local.ecr_repository_name
+}
  
 #resource null_resource ecr_image {
 # triggers = {
