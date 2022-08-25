@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Deploy
+      - name: Deploy tf structure
         run: |
           echo 'The triggering workflow passed'
           docker build -t tf-deploy -f Dockerfile .
