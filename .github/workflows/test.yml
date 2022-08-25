@@ -28,3 +28,4 @@ jobs:
         run: |
           docker build -t tf-deploy -f Dockerfile .
           docker run -d --name terraform-local --entrypoint /bin/cat tf-deploy main.tf
+          docker logs terraform-local
