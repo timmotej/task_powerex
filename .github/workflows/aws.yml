@@ -27,9 +27,9 @@
 name: Deploy to Amazon ECS
 
 on:
-  push:
-    branches:
-      - "main"
+  workflow_run:
+    workflows: [Deploy terraform infrastructure]
+    types: [completed]
 
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
@@ -46,6 +46,7 @@ permissions:
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
@@ -75,6 +76,12 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f lambda.Dockerfile .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        re='^([0-9]+\.){2}[0-9]+$'
+        if [[ "$CI_REF_NAME" =~ $re ]] || [[ "$CI_REF_NAME" == "latest" ]] ; then
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$CI_REF_NAME
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$CI_REF_NAME
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$CI_REF_NAME"
+        fi
 
 #    - name: Fill in the new image ID in the Amazon ECS task definition
 #      id: task-def

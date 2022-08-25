@@ -1,4 +1,8 @@
+name: Deploy terraform infrastructure
 on:
+  push:
+    branches:
+      - main
   workflow_run:
     workflows: [Test images locally]
     types: [completed]
@@ -8,13 +12,24 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - uses: actions/checkout@v3
+      - name: check where we are
+        run: |
+          ls -las 
+          pwd
+          ls -las ..
       - name: Deploy tf structure
         run: |
           echo 'The triggering workflow passed'
-          docker build -t tf-deploy -f Dockerfile .
+          docker build -t tf-deploy .
+          docker run -t tf-deploy apply -auto-approve -input=false -json
   on-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
-      - run: |
+      - uses: actions/checkout@v3
+      - name: Error tests workflow
+        run: |
           echo 'The triggering workflow failed'
+          echo 'This workflow now ends with failure too'
+          exit 1
