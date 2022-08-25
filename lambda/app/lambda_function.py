@@ -3,7 +3,7 @@ import re
 import boto3
 import os
 
-import urllib.parse
+import urllib
 
 print('Loading function')
 
@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     source_event_bucket = event['Records'][0]['s3']['bucket']['name']
     if source_event_bucket != source_bucket:
         return
-    object_key = urllib.unquote_plus(event['Records'][0]['s3']['object']['key'])
+    object_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
     target_bucket = target_bucket
     copy_source = {'Bucket': source_bucket, 'Key': object_key}
     
