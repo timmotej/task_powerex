@@ -1,10 +1,6 @@
 name: Test images locally
 
-on:
-  push:
-    branches:
-      - test**
-      - debug**
+on: push
 
 jobs:
 
