@@ -34,7 +34,6 @@ def lambda_handler(event, context):
     if source_event_bucket != source_bucket:
         return
     object_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
-    target_bucket = target_bucket
     copy_source = {'Bucket': source_bucket, 'Key': object_key}
     
     print ("Source bucket : ", source_bucket)
