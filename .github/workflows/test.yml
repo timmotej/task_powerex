@@ -12,17 +12,26 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build and test lambda Docker image locally
         run: |
-          docker build . --file lambda.Dockerfile --tag lambda-local:test
+          docker build lambda --file lambda/lambda.Dockerfile --tag lambda-local:test
           docker run -d --name lambda-local -p 9000:8080 lambda-local:test
           docker ps -a
           sleep 5
           curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"Records":["s3": {"bucket": {"name":"bucket-powerex-files-input"}, "object": {"key": "testfile"}}]}'
           docker ps -a
           docker logs lambda-local
+          docker stop lambda-local
+          docker rm lambda-local
 
-      - name: Build and test terraform Docker image locally
+      - name: Build and test terraform Docker image locally with build-args
         run: |
-          docker build -t tf-deploy -f Dockerfile .
-          docker run -d --name terraform-local --entrypoint /bin/cat tf-deploy main.tf
-          docker logs terraform-local
+          docker build -t terraform_infrastructure terraform
+          docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_infrastructure main.tf
+          #docker logs terraform-local
+          #docker stop terraform-local
+          #docker rm terraform-local
+          docker build -t terraform_lambda --build-arg MODULE=lambda terraform
+          docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_lambda main.tf
+          #docker logs terraform-local
+          #docker stop terraform-local
+          #docker rm terraform-local
           #exit 1
