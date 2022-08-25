@@ -8,15 +8,15 @@ provider aws {
  
 data aws_caller_identity current {}
  
+data aws_ecr_repository repo {
+ name = local.ecr_repository_name
+}
+
 locals {
  prefix = "pwx"
  account_id          = data.aws_caller_identity.current.account_id
  ecr_repository_name = "${local.prefix}_s3_move_lambda"
  ecr_image_tag       = "latest"
-}
- 
-data aws_ecr_repository repo {
- name = local.ecr_repository_name
 }
  
 #resource null_resource ecr_image {
@@ -108,7 +108,7 @@ resource aws_lambda_function s3_move_rename{
  function_name = "${local.prefix}-lambda"
  role = aws_iam_role.lambda.arn
  timeout = 300
- image_uri = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+ image_uri = "${data.aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
  package_type = "Image"
 }
  
