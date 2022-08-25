@@ -16,6 +16,22 @@ services:
     env_file:
       - ./aws.env
     entrypoint: /bin/bash
+  lambda:
+    build:
+      context: lambda
+      dockerfile: lambda.Dockerfile
+    container_name: lambda
+    networks:
+      - tfnet
+    stdin_open: true
+    tty: true
+    ports:
+      - "9000:8080"
+    #    environment:
+    #      - AWS_ACCESS_KEY_ID
+    #      - AWS_SECRET_ACCESS_KEY
+    #      - AWS_DEFAULT_REGION
+
 
 networks:
   tfnet:

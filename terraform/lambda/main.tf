@@ -1,57 +1,117 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.27.0"
-    }
-  }
-
-  required_version = ">= 1.2.0"
+variable region {
+ default = "us-east-1"
+}
+ 
+provider aws {
+ region = var.region
+}
+ 
+data aws_caller_identity current {}
+ 
+data aws_ecr_repository repo {
+ name = local.ecr_repository_name
 }
 
-provider "aws" {
-  # all is defined in env variables in image
-  #profile    = "default"
-  #access_key = $AWS_ACCESS_KEY_ID
-  #secret_key = $AWS_SECRET_ACCESS_KEY
-  #region     = $AWS_DEFAULT_REGION
+locals {
+ prefix = "pwx"
+ account_id          = data.aws_caller_identity.current.account_id
+ ecr_repository_name = "${local.prefix}_s3_move_lambda"
+ ecr_image_tag       = "latest"
 }
-
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
-
-  assume_role_policy = <<EOF
+ 
+#resource null_resource ecr_image {
+# triggers = {
+#   python_file = md5(file("${path.module}/lambdas/git_client/index.py"))
+#   docker_file = md5(file("${path.module}/lambdas/git_client/Dockerfile"))
+# }
+# 
+# provisioner "local-exec" {
+#   command = <<EOF
+#           aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.${var.region}.amazonaws.com
+#           cd ${path.module}/lambdas/git_client
+#           docker build -t ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag} .
+#           docker push ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag}
+#       EOF
+# }
+#}
+ 
+data aws_ecr_image lambda_image {
+  # depends_on = [
+  #   null_resource.ecr_image
+  # ]
+ repository_name = local.ecr_repository_name
+ image_tag       = local.ecr_image_tag
+}
+ 
+resource aws_iam_role lambda {
+ name = "${local.prefix}-lambda-role"
+ assume_role_policy = <<EOF
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+           "Action": "sts:AssumeRole",
+           "Principal": {
+               "Service": "lambda.amazonaws.com"
+           },
+           "Effect": "Allow"
+       }
+   ]
 }
-EOF
+ EOF
 }
-
-resource "aws_lambda_function" "test_lambda" {
-  # If the file is not in the current working directory you will need to include a
-  # path.module in the filename.
-  filename      = "lambda_function_payload.zip"
-  function_name = "lambda_function_name"
-  role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "index.test"
-
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
-
-  runtime = "nodejs12.x"
-
-  environment {
-    variables = {
-      foo = "bar"
-    }
-  }
+ 
+data aws_iam_policy_document lambda {
+   statement {
+     actions = [
+         "logs:CreateLogGroup",
+         "logs:CreateLogStream",
+         "logs:PutLogEvents"
+     ]
+     effect = "Allow"
+     resources = [ "*" ]
+     sid = "CreateCloudWatchLogs"
+   }
+ 
+   statement {
+     actions = [
+         "codecommit:GitPull",
+         "codecommit:GitPush",
+         "codecommit:GitBranch",
+         "codecommit:ListBranches",
+         "codecommit:CreateCommit",
+         "codecommit:GetCommit",
+         "codecommit:GetCommitHistory",
+         "codecommit:GetDifferences",
+         "codecommit:GetReferences",
+         "codecommit:BatchGetCommits",
+         "codecommit:GetTree",
+         "codecommit:GetObjectIdentifier",
+         "codecommit:GetMergeCommit"
+     ]
+     effect = "Allow"
+     resources = [ "*" ]
+     sid = "CodeCommit"
+   }
+}
+ 
+resource aws_iam_policy lambda {
+   name = "${local.prefix}-lambda-policy"
+   path = "/"
+   policy = data.aws_iam_policy_document.lambda.json
+}
+ 
+resource aws_lambda_function s3_move_rename{
+  #depends_on = [
+  #  null_resource.ecr_image
+  #]
+ function_name = "${local.prefix}-lambda"
+ role = aws_iam_role.lambda.arn
+ timeout = 300
+ image_uri = "${data.aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+ package_type = "Image"
+}
+ 
+output "lambda_name" {
+  value = aws_lambda_function.s3_move_rename.id
 }
