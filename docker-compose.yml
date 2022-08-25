@@ -2,6 +2,8 @@ version: "3"
 services:
   terraform:
     build:
+      args:
+        MODULE: backend
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform

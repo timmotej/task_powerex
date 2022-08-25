@@ -1,7 +1,3 @@
-variable region {
- default = "us-east-1"
-}
- 
 provider aws {
  region = var.region
 }
@@ -16,7 +12,7 @@ locals {
  prefix = "pwx"
  account_id          = data.aws_caller_identity.current.account_id
  ecr_repository_name = "${local.prefix}_s3_move_lambda"
- ecr_image_tag       = "latest"
+ ecr_image_tag       = var.image_tag
 }
  
 #resource null_resource ecr_image {

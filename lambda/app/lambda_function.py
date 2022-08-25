@@ -52,5 +52,4 @@ def lambda_handler(event, context):
         return response['ContentType']
     except Exception as err:
         print ("Error -"+str(err))
-        return e
-
+        return err
