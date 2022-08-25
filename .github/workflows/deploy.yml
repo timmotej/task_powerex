@@ -1,3 +1,4 @@
+name: Deploy terraform infrastructure
 on:
   workflow_run:
     workflows: [Test images locally]
