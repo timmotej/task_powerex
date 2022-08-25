@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "output_bucket" {
 }
 
 resource "aws_ecr_repository" "pwx" {
-  name                 = "pwx/entry"
+  name                 = "pwx/s3_move_lambda"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -45,6 +45,6 @@ resource "aws_ecr_repository" "pwx" {
 }
 #
 #data "aws_ecr_image" "lambda_s3_move_on_coming" {
-#  repository_name = "pwx/entry"
+#  repository_name = "pwx/s3_move_lambda"
 #  image_tag       = "0.0.1"
 #}
