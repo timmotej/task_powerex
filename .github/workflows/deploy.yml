@@ -14,7 +14,7 @@ jobs:
         run: |
           echo 'The triggering workflow passed'
           docker build -t tf-deploy -f Dockerfile .
-          docker run -t tf-deploy sh -c 'terraform plan && terraform apply -auto-approve -input=false -json'
+          docker run -t tf-deploy apply -auto-approve -input=false -json
   on-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}

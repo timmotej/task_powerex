@@ -23,4 +23,4 @@ jobs:
       - name: Build and test terraform Docker image locally
         run: |
           docker build -t tf-deploy -f Dockerfile .
-          docker run -t tf-deploy sh -c 'terraform fmt && cat main.tf'
+          docker run --rm -it --entrypoint /bin/cat tf-deploy main.tf
