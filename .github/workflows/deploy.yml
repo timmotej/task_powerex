@@ -1,5 +1,8 @@
 name: Deploy terraform infrastructure
 on:
+  push:
+    branches:
+      - main
   workflow_run:
     workflows: [Test images locally]
     types: [completed]
@@ -13,7 +16,9 @@ jobs:
       - name: Deploy tf structure
         run: |
           echo 'The triggering workflow passed'
-          docker build -t tf-deploy -f Dockerfile .
+          ls -las
+          ls -las ..
+          docker build -t tf-deploy .
           docker run -t tf-deploy apply -auto-approve -input=false -json
   on-failure:
     runs-on: ubuntu-latest
