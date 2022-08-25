@@ -9,16 +9,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: |
-        docker build . --file lambda.Dockerfile --tag lambda-local:test
-        docker run -d --name lambda-local -p 9000:8080 lambda-local:test
-        docker ps -a
-        sleep 5
-        curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
-        docker ps -a
-        docker logs lambda-local
-        docker stop lambda-local
-        docker rm lambda-local
+      - name: Build and test lambda Docker image locally
+        uses: actions/checkout@v3
+        run: |
+          docker build . --file lambda.Dockerfile --tag lambda-local:test
+          docker run -d --name lambda-local -p 9000:8080 lambda-local:test
+          docker ps -a
+          sleep 5
+          curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"Records":["s3": {"bucket": {"name":"bucket-powerex-files-input"}, "object": {"key": "testfile"}}]}'
+          docker ps -a
+          docker logs lambda-local
 
+      - name: Build and test terraform Docker image locally
+        uses: actions/checkout@v3
+        run: |
+          docker build -t tf-deploy -f Dockerfile .
+          docker run -t tf-deploy sh -c 'terraform fmt && cat main.tf'
