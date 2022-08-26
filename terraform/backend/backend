@@ -48,7 +48,7 @@ resource "aws_iam_policy" "terraform_s3_running_state_policy" {
 resource "aws_iam_role" "terraform_backend_role" {
   name = "terraform_backend_s3_role"
   path = "/"
-  decription = "Terraform managed role for s3 backend"
+  description = "Terraform managed role for s3 backend"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -69,9 +69,6 @@ resource "aws_iam_role" "terraform_backend_role" {
 
 resource "aws_s3_bucket" "terraform_state" {
   bucket = local.tf_s3_bucket_name
-  versioning {
-    enabled = true
-  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_bucket_encryption" {
@@ -80,6 +77,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_b
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
     }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "terraform_state_bucket_versioning" {
+  bucket = aws_s3_bucket.terraform_state.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
