@@ -2,8 +2,10 @@ version: "3"
 services:
   terraform:
     build:
+      # here to specify which module is needed, default infrastructure
+      # MODULE=subfolder of ./terraform
       args:
-        MODULE: backend
+        MODULE: infrastructure
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform
