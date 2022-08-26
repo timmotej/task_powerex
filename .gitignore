@@ -2,3 +2,4 @@
 *.swo
 aws*.env
 Pipfile
+**.tfstate
