@@ -3,12 +3,12 @@ name: Test images locally before deployment to production
 on:
   push:
     branches:
-      - "!main"
+      - "main"
     tags:
-      - "!([0-9]+.)*[0-9]+"
+      - "([0-9]+.)*[0-9]+"
 
 jobs:
-  test_builds_locally:
+  test_builds_locally_before_deployment:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,6 +26,8 @@ jobs:
 
       - name: Build and test terraform Docker image locally with build-args
         run: |
+          docker build -t terraform_backend --build-arg MODULE=backend terraform
+          docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_infrastructure main.tf
           docker build -t terraform_infrastructure terraform
           docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_infrastructure main.tf
           docker build -t terraform_lambda --build-arg MODULE=lambda terraform

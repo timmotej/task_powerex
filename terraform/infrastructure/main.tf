@@ -6,6 +6,15 @@ terraform {
     }
   }
 
+  backend "s3" {
+    bucket = "backend-s3-tf-bucket"
+    key    = "pwx/infrastructure/terraform.tfstate"
+    region = "us-east-1"
+    # Replace this with your DynamoDB table name!
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
+  }
+
   required_version = ">= 1.2.0"
 }
 
@@ -43,7 +52,7 @@ resource "aws_ecr_repository" "pwx" {
     scan_on_push = true
   }
 }
-#
+
 #data "aws_ecr_image" "lambda_s3_move_on_coming" {
 #  repository_name = "pwx_s3_move_lambda"
 #  image_tag       = "0.0.1"

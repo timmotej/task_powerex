@@ -13,3 +13,18 @@
 - https://github.com/prabhakar2020/aws_lambda_function *structure of function*
 - https://stackoverflow.com/a/32504096/10895880 *for moving objects*
 
+### Terraform
+
+#### Backend
+
+- https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa#aeb7
+
+#### AWS Lambda Docker
+
+- https://hands-on.cloud/terraform-deploy-python-lambda-container-image/#h-terraform-code
+
+#### Triggers for Lambda
+
+- https://faun.pub/building-s3-event-triggers-for-aws-lambda-using-terraform-1d61a05b4c97
+
+
