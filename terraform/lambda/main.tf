@@ -1,113 +1,131 @@
-provider aws {
- region = var.region
+provider "aws" {
+  region = var.region
 }
- 
-data aws_caller_identity current {}
- 
-data aws_ecr_repository repo {
- name = local.ecr_repository_name
+
+data "aws_caller_identity" "current" {}
+
+data "aws_ecr_repository" "repo" {
+  name = local.ecr_repository_name
 }
 
 locals {
- prefix = "pwx"
- account_id          = data.aws_caller_identity.current.account_id
- ecr_repository_name = "${local.prefix}_s3_move_lambda"
- ecr_image_tag       = var.image_tag
+  prefix              = "pwx"
+  account_id          = data.aws_caller_identity.current.account_id
+  ecr_repository_name = "${local.prefix}_s3_move_lambda"
+  ecr_image_tag       = var.image_tag
 }
- 
-#resource null_resource ecr_image {
-# triggers = {
-#   python_file = md5(file("${path.module}/lambdas/git_client/index.py"))
-#   docker_file = md5(file("${path.module}/lambdas/git_client/Dockerfile"))
-# }
-# 
-# provisioner "local-exec" {
-#   command = <<EOF
-#           aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.${var.region}.amazonaws.com
-#           cd ${path.module}/lambdas/git_client
-#           docker build -t ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag} .
-#           docker push ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag}
-#       EOF
-# }
-#}
- 
-data aws_ecr_image lambda_image {
-  # depends_on = [
-  #   null_resource.ecr_image
-  # ]
- repository_name = local.ecr_repository_name
- image_tag       = local.ecr_image_tag
+
+data "aws_ecr_image" "lambda_image" {
+  repository_name = local.ecr_repository_name
+  image_tag       = local.ecr_image_tag
 }
- 
-resource aws_iam_role lambda {
- name = "${local.prefix}-lambda-role"
- assume_role_policy = <<EOF
-{
-   "Version": "2012-10-17",
-   "Statement": [
-       {
-           "Action": "sts:AssumeRole",
-           "Principal": {
-               "Service": "lambda.amazonaws.com"
-           },
-           "Effect": "Allow"
-       }
-   ]
+
+resource "aws_iam_policy" "lambda_pwx_move_s3_and_logs" {
+  name        = "lambda_pwx_create_logs"
+  description = "My test policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream",
+          "logs:CreateLogGroup",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+        Sid      = "CreateCloudWatchLogs"
+      },
+      {
+        Action = [
+          "codecommit:ListBranches",
+          "codecommit:GitPush",
+          "codecommit:GitPull",
+          "codecommit:GitBranch",
+          "codecommit:GetTree",
+          "codecommit:GetReferences",
+          "codecommit:GetObjectIdentifier",
+          "codecommit:GetMergeCommit",
+          "codecommit:GetDifferences",
+          "codecommit:GetCommitHistory",
+          "codecommit:GetCommit",
+          "codecommit:CreateCommit",
+          "codecommit:BatchGetCommits",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+        Sid      = "CodeCommit"
+      },
+      {
+        Sid    = "VisualEditor1"
+        Effect = "Allow"
+        Action = "s3:*"
+        Resource = [
+          "arn:aws:s3:us-west-2:032507288228:async-request/mrap/*/*",
+          "arn:aws:s3:*:032507288228:accesspoint/*",
+          "arn:aws:s3:::*",
+          "arn:aws:s3:*:032507288228:storage-lens/*",
+          "arn:aws:s3-object-lambda:*:032507288228:accesspoint/*",
+          "arn:aws:s3:*:032507288228:job/*",
+        ]
+      },
+      {
+        Sid    = "VisualEditor2"
+        Effect = "Allow"
+        Action = "s3:*"
+        Resource = [
+          "arn:aws:s3:::*/*",
+          "arn:aws:s3::032507288228:accesspoint/*"
+        ]
+      },
+      {
+        Sid    = "VisualEditor0"
+        Effect = "Allow"
+        Action = [
+          "s3:ListStorageLensConfigurations",
+          "s3:ListAccessPointsForObjectLambda",
+          "s3:GetAccessPoint",
+          "s3:PutAccountPublicAccessBlock",
+          "s3:GetAccountPublicAccessBlock",
+          "s3:ListAllMyBuckets",
+          "s3:ListAccessPoints",
+          "s3:PutAccessPointPublicAccessBlock",
+          "s3:ListJobs",
+          "s3:PutStorageLensConfiguration",
+          "s3:ListMultiRegionAccessPoints",
+          "s3:CreateJob",
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
- EOF
+resource "aws_iam_role" "lambda_pwx_s3" {
+  name = "lambda_pwx_s3"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+  managed_policy_arns = [aws_iam_policy.lambda_pwx_move_s3_and_logs.arn]
 }
- 
-data aws_iam_policy_document lambda {
-   statement {
-     actions = [
-         "logs:CreateLogGroup",
-         "logs:CreateLogStream",
-         "logs:PutLogEvents"
-     ]
-     effect = "Allow"
-     resources = [ "*" ]
-     sid = "CreateCloudWatchLogs"
-   }
- 
-   statement {
-     actions = [
-         "codecommit:GitPull",
-         "codecommit:GitPush",
-         "codecommit:GitBranch",
-         "codecommit:ListBranches",
-         "codecommit:CreateCommit",
-         "codecommit:GetCommit",
-         "codecommit:GetCommitHistory",
-         "codecommit:GetDifferences",
-         "codecommit:GetReferences",
-         "codecommit:BatchGetCommits",
-         "codecommit:GetTree",
-         "codecommit:GetObjectIdentifier",
-         "codecommit:GetMergeCommit"
-     ]
-     effect = "Allow"
-     resources = [ "*" ]
-     sid = "CodeCommit"
-   }
+
+resource "aws_lambda_function" "lambda_s3_move_rename" {
+  function_name = "${local.prefix}_lambda_s3_move"
+  role          = aws_iam_role.lambda_pwx_s3.arn
+  timeout       = 300
+  image_uri     = "${data.aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+  package_type  = "Image"
 }
- 
-resource aws_iam_policy lambda {
-   name = "${local.prefix}-lambda-policy"
-   path = "/"
-   policy = data.aws_iam_policy_document.lambda.json
-}
- 
-resource aws_lambda_function s3_move_rename{
-  #depends_on = [
-  #  null_resource.ecr_image
-  #]
- function_name = "${local.prefix}-lambda"
- role = aws_iam_role.lambda.arn
- timeout = 300
- image_uri = "${data.aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
- package_type = "Image"
-}
- 
+
 output "lambda_name" {
-  value = aws_lambda_function.s3_move_rename.id
+  value = aws_lambda_function.lambda_s3_move_rename.id
 }
