@@ -1,8 +1,8 @@
 name: Deploy terraform infrastructure
 on:
   push:
-    branches-ignore:
-      - '!main'
+    tags:
+      - 'infrastructure'
         #workflow_run:
         #  workflows: [Test images locally]
         #  types: [completed]
