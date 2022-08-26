@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "backend-s3-tf-bucket"
+    bucket         = "backend_s3_tf_bucket"
     key            = "pwx/lambda/terraform.tfstate"
     region         = "us-east-1"
     # Replace this with your DynamoDB table name!
@@ -121,6 +121,7 @@ resource "aws_iam_policy" "lambda_pwx_move_s3_and_logs" {
     ]
   })
 }
+
 resource "aws_iam_role" "lambda_pwx_s3" {
   name = "lambda_pwx_s3"
   description = "Terraform managed role for pwx lambda docker function"
