@@ -6,15 +6,6 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket         = "backend-s3-tf-bucket"
-    key            = "pwx/lambda/terraform.tfstate"
-    region         = "us-east-1"
-    # Replace this with your DynamoDB table name!
-    dynamodb_table = "terraform_up_and_running_locks"
-    encrypt        = true
-  }
-
   required_version = ">= 1.2.0"
 }
 

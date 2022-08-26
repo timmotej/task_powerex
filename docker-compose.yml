@@ -7,7 +7,7 @@ services:
       args:
         MODULE: infrastructure
       context: ./terraform
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile2
     container_name: terraform_infrastructure
     networks:
       - tfnet
