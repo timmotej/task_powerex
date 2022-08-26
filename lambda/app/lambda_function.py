@@ -44,13 +44,6 @@ def lambda_handler(event, context):
     print ("Request ID: ", context.aws_request_id)
     print ("Mem. limits(MB): ", context.memory_limit_in_mb)
     
-    try:
-        #print ("Using waiter to waiting for object to persist through s3 service")
-        #waiter = s3.get_waiter('object_exists')
-        #waiter.wait(Bucket=source_bucket, Key=object_key)
-        s3.copy_object(Bucket=target_bucket, Key=f"{prefix}{object_key}", CopySource=copy_source)
-        s3.Object(copy_source).delete()
-        return response['ContentType']
-    except Exception as err:
-        print ("Error -"+str(err))
-        return err
+    s3.copy_object(Bucket=target_bucket, Key=f"{prefix}{object_key}", CopySource=copy_source)
+    s3.delete_object(copy_source)
+    return response['ContentType']
