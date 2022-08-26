@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "backend-s3-tf-bucket"
+    bucket = "backend_s3_tf_bucket"
     key    = "pwx/backend/terraform.tfstate"
     region = "us-east-1"
     # Replace this with your DynamoDB table name!
@@ -21,7 +21,7 @@ terraform {
 provider "aws" {}
 
 locals {
-  tf_s3_bucket_name              = "backend-s3-tf-bucket"
+  tf_s3_bucket_name              = "backend_s3_tf_bucket"
   aws_region                     = var.aws_region
   terraform_dynamodb_locks_table = "terraform_up_and_running_locks"
 }

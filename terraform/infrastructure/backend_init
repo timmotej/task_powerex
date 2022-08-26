@@ -6,15 +6,6 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "backend-s3-tf-bucket"
-    key    = "pwx/infrastructure/terraform.tfstate"
-    region = "us-east-1"
-    # Replace this with your DynamoDB table name!
-    dynamodb_table = "terraform_up_and_running_locks"
-    encrypt        = true
-  }
-
   required_version = ">= 1.2.0"
 }
 
@@ -30,7 +21,6 @@ resource "aws_s3_bucket" "input_bucket" {
   bucket = "bucket-powerex-files-input"
 
   tags = {
-    Name        = "Powerex files input"
     Environment = "test"
   }
 }
@@ -39,7 +29,6 @@ resource "aws_s3_bucket" "output_bucket" {
   bucket = "bucket-powerex-files-output"
 
   tags = {
-    Name        = "Powerex files output"
     Environment = "test"
   }
 }

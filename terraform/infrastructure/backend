@@ -27,7 +27,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "input_bucket" {
-  bucket = "bucket-powerex-files-input"
+  bucket = "bucket_powerex_files_input"
 
   tags = {
     Name        = "Powerex files input"
@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "input_bucket" {
 }
 
 resource "aws_s3_bucket" "output_bucket" {
-  bucket = "bucket-powerex-files-output"
+  bucket = "bucket_powerex_files_output"
 
   tags = {
     Name        = "Powerex files output"

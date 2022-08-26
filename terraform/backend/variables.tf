@@ -5,10 +5,10 @@ variable "aws_region" {
 
 variable "tf_s3_bucket_name" {
   description = "A unique name for the bucket"
-  default = "backend-s3-tf-bucket"
+  default = "backend_s3_tf_bucket"
 }
 
 variable "terraform_dynamodb_locks_table" {
   description = "A name of the table for terraform locks of tfstate in s3"
-  default = "terraform-table-locks"
+  default = "terraform_table_locks"
 }

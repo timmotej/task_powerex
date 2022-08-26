@@ -14,8 +14,9 @@ jobs:
       - name: Deploy tf structure
         run: |
           echo 'The triggering workflow passed'
-          docker build -t terraform_infrastructure terraform
-          docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} terraform_infrastructure apply -auto-approve -input=false -json
+          docker build -t terraform_backend --build-arg MODULE=backend terraform
+          docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} terraform_backend apply -auto-approve -input=false -json
+
   deploy_s3_ecr_to_aws:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -25,7 +26,19 @@ jobs:
         run: |
           echo 'The triggering workflow passed'
           docker build -t terraform_infrastructure terraform
-          docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} terraform_infrastructure apply -auto-approve -input=false -json
+          docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} terraform_infrastructure apply -auto-approve -input=false -json || \
+          (
+          docker build -t terraform_infrastructure --build-arg INITIALIZE=backend terraform
+          echo "The backend will be initialized" && \
+          docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            --entrypoint /bin/bash \
+            terraform_infrastructure \
+            -c "terraform apply -auto-approve -input=false -json && \
+                cp backend main.tf && \
+                terraform init -migrate-state -force-copy && \
+                terraform apply -auto-approve -input=false -json" )
   fail_on_failure_previous_workflow:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
