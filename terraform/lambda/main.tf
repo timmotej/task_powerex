@@ -1,4 +1,24 @@
-provider "aws" {
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.27.0"
+    }
+  }
+
+  required_version = ">= 1.2.0"
+
+  backend "s3" {
+    bucket         = "backend-s3-tf-bucket"
+    key            = "pwx/backend/terraform.tfstate"
+    region         = "us-east-1"
+    # Replace this with your DynamoDB table name!
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
+  }
+}
+
+provider aws {
   region = var.region
 }
 

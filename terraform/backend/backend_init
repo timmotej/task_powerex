@@ -6,15 +6,6 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "backend-s3-tf-bucket"
-    key    = "pwx/backend/terraform.tfstate"
-    region = "us-east-1"
-    # Replace this with your DynamoDB table name!
-    dynamodb_table = "terraform-up-and-running-locks"
-    encrypt        = true
-  }
-
   required_version = ">= 1.2.0"
 }
 
@@ -74,7 +65,7 @@ resource "aws_s3_bucket" "terraform_state" {
   }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_bucket_encryption" {
+resource aws_s3_bucket_server_side_encryption_configuration "terraform_state_bucket_encryption" {
   bucket = aws_s3_bucket.terraform_state.bucket
   rule {
     apply_server_side_encryption_by_default {
