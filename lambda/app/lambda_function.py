@@ -30,9 +30,10 @@ prefix = os.getenv("PREFIX","powerex_")
     
 
 def lambda_handler(event, context):
+    print(json.dumps(event,indent=2))
     source_event_bucket = event['Records'][0]['s3']['bucket']['name']
-    if source_event_bucket != source_bucket:
-        return
+    #if source_event_bucket != source_bucket:
+    #    return
     object_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
     copy_source = {'Bucket': source_bucket, 'Key': object_key}
     
@@ -44,9 +45,9 @@ def lambda_handler(event, context):
     print ("Mem. limits(MB): ", context.memory_limit_in_mb)
     
     try:
-        print ("Using waiter to waiting for object to persist through s3 service")
-        waiter = s3.get_waiter('object_exists')
-        waiter.wait(Bucket=source_bucket, Key=object_key)
+        #print ("Using waiter to waiting for object to persist through s3 service")
+        #waiter = s3.get_waiter('object_exists')
+        #waiter.wait(Bucket=source_bucket, Key=object_key)
         s3.copy_object(Bucket=target_bucket, Key=f"{prefix}{object_key}", CopySource=copy_source)
         s3.Object(copy_source).delete()
         return response['ContentType']
