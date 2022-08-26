@@ -66,6 +66,9 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Load env vars from CI pipeline
+      uses: FranzDiebold/github-env-vars-action@v2
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
