@@ -1,5 +1,5 @@
 *.swp
 *.swo
 aws*.env
-Pipfile
+Pipfile*
 **.tfstate
