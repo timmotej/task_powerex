@@ -20,7 +20,7 @@ jobs:
             -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -e AWS_REGION=${{ secrets.AWS_REGION }} \
             --entrypoint /bin/bash \
-            terraform_infrastructure \
+            terraform_backend \
             -c "terraform apply -auto-approve -input=false -json && \
                 cp backend main.tf && \
                 terraform init -migrate-state -force-copy && \
