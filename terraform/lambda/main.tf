@@ -11,7 +11,7 @@ terraform {
     key            = "pwx/lambda/terraform.tfstate"
     region         = "us-east-1"
     # Replace this with your DynamoDB table name!
-    dynamodb_table = "terraform-up-and-running-locks"
+    dynamodb_table = "terraform_up_and_running_locks"
     encrypt        = true
   }
 
@@ -140,7 +140,7 @@ resource "aws_iam_role" "lambda_pwx_s3" {
 }
 
 data "aws_s3_bucket" "bucket_powerex_files_input" {
-  bucket  = "bucket-powerex-files-input"
+  bucket  = "bucket_powerex_files_input"
 }
 
 # Adding S3 bucket as trigger to my lambda and giving the permissions

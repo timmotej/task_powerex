@@ -8,8 +8,8 @@ import urllib
 print("Loading function")
 
 s3 = boto3.client("s3")
-# source_bucket = os.getenv("SOURCE_BUCKET", "bucket-powerex-files-input")
-target_bucket = os.getenv("TARGET_BUCKET", "bucket-powerex-files-output")
+# source_bucket = os.getenv("SOURCE_BUCKET", "bucket_powerex_files_input")
+target_bucket = os.getenv("TARGET_BUCKET", "bucket_powerex_files_output")
 prefix = os.getenv("PREFIX", "powerex_")
 
 

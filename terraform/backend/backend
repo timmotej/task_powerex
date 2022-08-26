@@ -11,7 +11,7 @@ terraform {
     key    = "pwx/backend/terraform.tfstate"
     region = "us-east-1"
     # Replace this with your DynamoDB table name!
-    dynamodb_table = "terraform-up-and-running-locks"
+    dynamodb_table = "terraform_up_and_running_locks"
     encrypt        = true
   }
 
@@ -23,7 +23,7 @@ provider "aws" {}
 locals {
   tf_s3_bucket_name              = "backend-s3-tf-bucket"
   aws_region                     = var.aws_region
-  terraform_dynamodb_locks_table = "terraform-up-and-running-locks"
+  terraform_dynamodb_locks_table = "terraform_up_and_running_locks"
 }
 
 resource "aws_iam_policy" "terraform_s3_running_state_policy" {
