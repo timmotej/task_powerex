@@ -45,5 +45,5 @@ def lambda_handler(event, context):
     print ("Mem. limits(MB): ", context.memory_limit_in_mb)
     
     s3.copy_object(Bucket=target_bucket, Key=f"{prefix}{object_key}", CopySource=copy_source)
-    s3.Object(copy_source).delete()
+    s3.delete_object(copy_source)
     return response['ContentType']
