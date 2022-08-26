@@ -3,9 +3,9 @@ on:
   push:
     branches-ignore:
       - '!main'
-  workflow_run:
-    workflows: [Test images locally]
-    types: [completed]
+        #workflow_run:
+        #  workflows: [Test images locally]
+        #  types: [completed]
 
 jobs:
   on-success:
