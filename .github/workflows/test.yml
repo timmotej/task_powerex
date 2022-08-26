@@ -27,12 +27,5 @@ jobs:
         run: |
           docker build -t terraform_infrastructure terraform
           docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_infrastructure main.tf
-          #docker logs terraform-local
-          #docker stop terraform-local
-          #docker rm terraform-local
           docker build -t terraform_lambda --build-arg MODULE=lambda terraform
           docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_lambda main.tf
-          #docker logs terraform-local
-          #docker stop terraform-local
-          #docker rm terraform-local
-          #exit 1

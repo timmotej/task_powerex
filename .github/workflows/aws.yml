@@ -28,7 +28,7 @@ name: Push lambda docker image to ECR
 
 on:
   workflow_run:
-    workflows: [Deploy terraform infrastructure]
+    workflows: [Test images locally,Deploy terraform infrastructure]
     types: [completed]
 
 env:
