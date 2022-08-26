@@ -1,0 +1,28 @@
+name: Build terraform backend and save its state to s3
+
+on:
+  workflow_run:
+    workflows: [Test image of terraform backend and existence of backend]
+    types: [completed]
+
+jobs:
+  # runs only when backend is not working/present
+  test_builds_locally_before_deployment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build backend terraform image and test aws terraform s3 backend existence
+        run: |
+          docker build -t terraform_backend --build-arg MODULE=backend --build-arg INITIALIZE=backend terraform
+          echo "The backend will be initialized and deployed in aws"
+          docker run -t -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            --entrypoint /bin/bash \
+            terraform_infrastructure \
+            -c "terraform apply -auto-approve -input=false -json && \
+                cp backend main.tf && \
+                terraform init -migrate-state -force-copy && \
+                terraform apply -auto-approve -input=false -json"
+

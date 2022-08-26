@@ -24,11 +24,11 @@
 #    See the documentation for each action used below for the recommended IAM policies for this IAM user,
 #    and best practices on handling the access key credentials.
 
-name: Push lambda docker image to ECR
+name: Build, Push and Deploy lambda docker image to ECR
 
 on:
   workflow_run:
-    workflows: [Test images locally,Deploy terraform infrastructure]
+    workflows: [Deploy terraform backend and infrastructure S3 ECR]
     types: [completed]
 
 env:
@@ -45,7 +45,7 @@ permissions:
   contents: read
 
 jobs:
-  push_to_ECR:
+  lambda_deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Push Lambda image to ECR repository
     runs-on: ubuntu-latest

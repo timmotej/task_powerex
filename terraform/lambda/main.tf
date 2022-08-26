@@ -6,16 +6,16 @@ terraform {
     }
   }
 
-  required_version = ">= 1.2.0"
-
   backend "s3" {
     bucket         = "backend-s3-tf-bucket"
-    key            = "pwx/backend/terraform.tfstate"
+    key            = "pwx/lambda/terraform.tfstate"
     region         = "us-east-1"
     # Replace this with your DynamoDB table name!
     dynamodb_table = "terraform-up-and-running-locks"
     encrypt        = true
   }
+
+  required_version = ">= 1.2.0"
 }
 
 provider aws {
@@ -42,7 +42,7 @@ data "aws_ecr_image" "lambda_image" {
 
 resource "aws_iam_policy" "lambda_pwx_move_s3_and_logs" {
   name        = "lambda_pwx_create_logs"
-  description = "My test policy"
+  description = "Terraform managed policy for pwx lambda docker function"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -123,6 +123,7 @@ resource "aws_iam_policy" "lambda_pwx_move_s3_and_logs" {
 }
 resource "aws_iam_role" "lambda_pwx_s3" {
   name = "lambda_pwx_s3"
+  description = "Terraform managed role for pwx lambda docker function"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -138,6 +139,27 @@ resource "aws_iam_role" "lambda_pwx_s3" {
   managed_policy_arns = [aws_iam_policy.lambda_pwx_move_s3_and_logs.arn]
 }
 
+data "aws_s3_bucket" "bucket_powerex_files_input" {
+  bucket  = "bucket-powerex-files-input"
+}
+
+# Adding S3 bucket as trigger to my lambda and giving the permissions
+resource "aws_s3_bucket_notification" "aws_trigger_lambda_pwx_move_files" {
+  bucket = data.aws_s3_bucket.bucket_powerex_files_input.id
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.lambda_s3_move_rename.arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+}
+
+resource "aws_lambda_permission" "permission_lambda_to_move_files_s3" {
+  statement_id  = "AllowS3Invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_s3_move_rename.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = "arn:aws:s3:::${data.aws_s3_bucket.bucket_powerex_files_input.id}"
+}
+
 resource "aws_lambda_function" "lambda_s3_move_rename" {
   function_name = "${local.prefix}_lambda_s3_move"
   role          = aws_iam_role.lambda_pwx_s3.arn
@@ -146,6 +168,6 @@ resource "aws_lambda_function" "lambda_s3_move_rename" {
   package_type  = "Image"
 }
 
-output "lambda_name" {
+output "lambda_function_id" {
   value = aws_lambda_function.lambda_s3_move_rename.id
 }
