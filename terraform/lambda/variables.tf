@@ -5,4 +5,3 @@ variable region {
 variable image_tag {
   default = "latest"
 }
-

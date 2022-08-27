@@ -6,6 +6,9 @@ services:
       # MODULE=subfolder of ./terraform
       args:
         MODULE: infrastructure
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
+        AWS_DEFAULT_REGION: "us-east-1"
       context: ./terraform
       dockerfile: Dockerfile2
     container_name: terraform_infrastructure
@@ -22,10 +25,11 @@ services:
     entrypoint: /bin/bash
   terraform_lambda:
     build:
-      # here to specify which module is needed, default infrastructure
-      # MODULE=subfolder of ./terraform
       args:
-        MODULE: lambda
+        MODULE: "lambda"
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
+        AWS_DEFAULT_REGION: "us-east-1"
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_lambda
@@ -45,6 +49,9 @@ services:
       # here to specify which module is needed, default infrastructure
       # MODULE=subfolder of ./terraform
       args:
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
+        AWS_DEFAULT_REGION: "us-east-1"
         MODULE: backend
         INITIALIZE: "yes"
       context: ./terraform
@@ -67,6 +74,9 @@ services:
       # MODULE=subfolder of ./terraform
       args:
         MODULE: backend
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
+        AWS_DEFAULT_REGION: "us-east-1"
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_backend

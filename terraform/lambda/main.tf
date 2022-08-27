@@ -18,10 +18,6 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
-provider aws {
-  region = var.region
-}
-
 data "aws_caller_identity" "current" {}
 
 data "aws_ecr_repository" "repo" {
@@ -141,7 +137,7 @@ resource "aws_iam_role" "lambda_pwx_s3" {
 }
 
 data "aws_s3_bucket" "bucket_powerex_files_input" {
-  bucket  = "bucket_powerex_files_input"
+  bucket  = "bucket-powerex-files-input"
 }
 
 # Adding S3 bucket as trigger to my lambda and giving the permissions

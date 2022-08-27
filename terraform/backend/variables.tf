@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "tf_s3_bucket_name" {
   description = "A unique name for the bucket"
-  default = "backend_s3_tf_bucket"
+  default = "backend-s3-tf-bucket"
 }
 
 variable "terraform_dynamodb_locks_table" {
