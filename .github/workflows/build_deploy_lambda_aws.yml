@@ -95,12 +95,30 @@ jobs:
         re='^([0-9]+\.){2}[0-9]+$'
         if [[ "$CI_REF_NAME" =~ "$re" ]]; then
           echo 'Deploying lambda function' $CI_REF_NAME
-          docker build -t terraform_lambda --build-arg MODULE=lambda terraform
-          docker run -t -e TF_VAR_image_tag=${CI_REF_NAME} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} terraform_lambda apply -auto-approve -input=false -json
+          docker build -t terraform_lambda \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --build-arg MODULE=lambda terraform
+          docker run -t \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            -e TF_VAR_image_tag=${CI_REF_NAME} \
+            terraform_lambda apply -auto-approve -input=false -json
         elif [[ "$CI_REF_NAME" == "main" ]]; then
           echo 'Deploying lambda function'
-          docker build -t terraform_lambda --build-arg MODULE=lambda terraform
-          docker run -t -e TF_VAR_image_tag=latest -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_REGION=${{ secrets.AWS_REGION }} terraform_lambda apply -auto-approve -input=false -json
+          docker build -t terraform_lambda \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --build-arg MODULE=lambda terraform
+          docker run -t \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            -e TF_VAR_image_tag=latest \
+            terraform_lambda apply -auto-approve -input=false -json
         fi
 
 #    - name: Fill in the new image ID in the Amazon ECS task definition

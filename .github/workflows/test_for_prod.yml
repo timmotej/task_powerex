@@ -26,9 +26,36 @@ jobs:
 
       - name: Build and test terraform Docker image locally with build-args
         run: |
-          docker build -t terraform_backend --build-arg MODULE=backend terraform
-          docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_infrastructure main.tf
-          docker build -t terraform_infrastructure terraform
-          docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_infrastructure main.tf
-          docker build -t terraform_lambda --build-arg MODULE=lambda terraform
-          docker run -t --rm --name terraform-local --entrypoint /bin/cat terraform_lambda main.tf
+          docker build -t terraform_backend \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --build-arg MODULE=backend terraform
+          docker run -t \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            --entrypoint /bin/cat \
+            terraform_backend main.tf
+          docker build -t terraform_infrastructure \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --build-arg MODULE=infrastructure terraform
+          docker run -t \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            --entrypoint /bin/cat \
+            terraform_infrastructure main.tf
+          docker build -t terraform_lambda \
+            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --build-arg "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --build-arg MODULE=lambda terraform
+          docker run -t \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            --entrypoint /bin/cat \
+            terraform_lambda main.tf

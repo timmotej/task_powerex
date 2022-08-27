@@ -15,7 +15,8 @@ WORKDIR /home/terraform
 
 RUN [ -z ${INITIALIZE} ] || ( cp backend_init main.tf && \
     terraform init && \
-    terraform apply && \
+    terraform apply -auto-approve -input=false -json && \
+    cp backend main.tf && \
     terrafor init -migrate-state -force-copy ) && \
     terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY" && \
     terraform fmt && \
