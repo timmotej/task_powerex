@@ -6,6 +6,10 @@
 - Create S3 buckets, ECR, AWS Lambda Docker using Terraform.
 - Put assignment code to github.
 
+## How to deploy Lambda
+
+Workflow does everything automatically. 
+The new version is released from main branch. The new version is built when there is a tag `X.Y.Z` (version no, e.g. `0.2.4`)
 ## Links
 
 ### Lambda AWS function
