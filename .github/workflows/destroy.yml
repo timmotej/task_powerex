@@ -3,8 +3,8 @@ name: Destroy terraform backend and save its state to s3
 on:
   push:
     tags:
-      - destroy**
-      - delete**
+      - "destroy**"
+      - "delete**"
 
 jobs:
   # runs only when backend is not working/present
