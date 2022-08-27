@@ -1,12 +1,13 @@
-name: Test images locally before deployment to production
+name: Test images locally
 
 on:
   push:
-    branches:
-      - "!main"
-    tags:
-      - "!([0-9]+.)*[0-9]+"
-      - "!(delete|destroy)**"
+    branches-ignore:
+      - "main"
+    tags-ignore:
+      - "([0-9]+.)*[0-9]+"
+      - "destroy**"
+      - "delete**"
 
 jobs:
   test_builds_locally:

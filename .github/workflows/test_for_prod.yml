@@ -6,7 +6,9 @@ on:
       - "main"
     tags:
       - "([0-9]+.)*[0-9]+"
-      - "!(delete|destroy)**"
+    tags-ignore:
+      - "destroy**"
+      - "delete**"
 
 jobs:
   test_builds_locally_before_deployment:
