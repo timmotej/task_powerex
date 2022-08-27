@@ -18,8 +18,6 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
-provider "aws" {}
-
 locals {
   tf_s3_bucket_name              = "backend-s3-tf-bucket"
   aws_region                     = var.aws_region
