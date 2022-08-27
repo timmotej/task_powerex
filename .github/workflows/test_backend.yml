@@ -1,6 +1,9 @@
 name: Test image of terraform backend and existence of backend
 
-on: push
+on:
+  push:
+    tags:
+      - "!(delete|destroy)**"
 
 jobs:
   test_builds_locally_before_deployment:
