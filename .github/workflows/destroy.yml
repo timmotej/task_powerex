@@ -10,7 +10,6 @@ jobs:
   # runs only when backend is not working/present
   test_destroys_locally_before_deployment:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       - uses: actions/checkout@v3
       - name: Destroy backend terraform image and test aws terraform s3 backend existence
