@@ -5,11 +5,11 @@ services:
       # here to specify which module is needed, default infrastructure
       # MODULE=subfolder of ./terraform
       args:
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
-        MODULE: backend
-        INITIALIZE: "yes"
+        - MODULE=backend
+        - INITIALIZE=yes
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_backend_init
@@ -29,10 +29,10 @@ services:
       # here to specify which module is needed, default infrastructure
       # MODULE=subfolder of ./terraform
       args:
-        MODULE: backend
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
+        - MODULE=backend
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_backend
@@ -46,16 +46,16 @@ services:
     #      - AWS_DEFAULT_REGION
     env_file:
       - ./aws.env
-    entrypoint: /bin/bash
+    entrypoint: /bin/sh
   terraform_infrastructure:
     build:
       # here to specify which module is needed, default infrastructure
       # MODULE=subfolder of ./terraform
       args:
-        MODULE: infrastructure
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
+        - MODULE=infrastructure
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_infrastructure
@@ -73,10 +73,10 @@ services:
   terraform_lambda:
     build:
       args:
-        MODULE: "lambda"
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
+        - MODULE=lambda
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_lambda
@@ -90,6 +90,8 @@ services:
     #      - AWS_DEFAULT_REGION
     env_file:
       - ./aws.env
+    environment:
+      - TF_VAR_image_tag=latest
     entrypoint: /bin/bash
   lambda:
     build:

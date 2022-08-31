@@ -10,6 +10,83 @@
 
 Workflow does everything automatically. 
 The new version is released from main branch. The new version is built when there is a tag `X.Y.Z` (version no, e.g. `0.2.4`)
+
+### Deploy from local machine
+
+1. change all necessary names of:
+    - buckets (can be only `[a-z-]+`)
+        - backend `backend-s3-tf-bucket` defined in:
+            ```bash
+            - ./terraform/backend/backend
+            - ./terraform/backend/backend_init
+            - ./terraform/backend/main.tf
+            - ./terraform/backend/variables.tf
+            - ./terraform/infrastructure/backend
+            - ./terraform/infrastructure/main.tf
+            - ./terraform/lambda/backend
+            - ./terraform/lambda/main.tf
+            ```
+        - input bucket `bucket-powerex-files-input` defined in:
+            ```bash
+            - ./lambda/app/lambda_function.py
+            - ./terraform/infrastructure/backend
+            - ./terraform/infrastructure/backend_init
+            - ./terraform/infrastructure/main.tf
+            - ./terraform/lambda/backend
+            - ./terraform/lambda/backend_init
+            - ./terraform/lambda/main.tf
+            ```
+        - output bucket `bucket-powerex-files-output` defined in:
+            ```bash
+            - ./lambda/app/lambda_function.py
+            - ./terraform/infrastructure/backend_init
+            - ./terraform/infrastructure/backend
+            - ./terraform/infrastructure/main.tf
+            ```
+        - ecr repository `pwx_s3_move_lambda` defined in:
+            ```bash
+            - ./terraform/infrastructure/backend
+            - ./terraform/infrastructure/backend_init
+            - ./terraform/infrastructure/main.tf
+            ```
+        - lambda function name `${local.prefix}_lambda_s3_move` defined in:
+            ```bash
+            - ./terraform/lambda/backend
+            - ./terraform/lambda/backend_init
+            - ./terraform/lambda/main.tf
+            ```
+1. define necessary env variables in your local env:
+    ```bash
+    export AWS_SECRET_ACCESS_KEY="secretkey"
+    export AWS_ACCESS_KEY_ID="yourid"
+    export AWS_REGION="region"
+    ```
+    and also in `aws.env` in the form:
+    ```bash
+    AWS_SECRET_ACCESS_KEY="secretkey"
+    AWS_ACCESS_KEY_ID="yourid"
+    AWS_REGION="region"
+    ```
+1. deploy backend with
+    ```bash
+    docker-compose up --build terraform_backend_init
+    ```
+1. deploy infrastructure with
+    ```bash
+    docker-compose up --build terraform_infrastructure
+    ```
+1. build and tag docker image for lambda function and push the image to the ECR repository with
+    ```bash
+    tag=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    docker build -t $tag -f lambda/lambda.Dockerfile lambda
+    docker push $tag
+    ```
+1. overwrite the in `docker-compose.yml` the value of `TF_VAR_image` to `$tag`
+1. deploy lambda function with defined trigger to AWS
+    ```bash
+    docker-compose up --build terraform_lambda
+    ```
+
 ## Links
 
 ### Lambda AWS function
