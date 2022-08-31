@@ -122,7 +122,7 @@ resource "aws_iam_role" "lambda_pwx_s3" {
   name = "lambda_pwx_s3"
   description = "Terraform managed role for pwx lambda docker function"
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
         Principal = {

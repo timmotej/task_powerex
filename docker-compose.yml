@@ -1,59 +1,15 @@
 version: "3" 
 services:
-  terraform:
-    build:
-      # here to specify which module is needed, default infrastructure
-      # MODULE=subfolder of ./terraform
-      args:
-        MODULE: infrastructure
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
-      context: ./terraform
-      dockerfile: Dockerfile2
-    container_name: terraform_infrastructure
-    networks:
-      - tfnet
-    stdin_open: true
-    tty: true
-    #    environment:
-    #      - AWS_ACCESS_KEY_ID
-    #      - AWS_SECRET_ACCESS_KEY
-    #      - AWS_DEFAULT_REGION
-    env_file:
-      - ./aws.env
-    entrypoint: /bin/bash
-  terraform_lambda:
-    build:
-      args:
-        MODULE: "lambda"
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
-      context: ./terraform
-      dockerfile: Dockerfile
-    container_name: terraform_lambda
-    networks:
-      - tfnet
-    stdin_open: true
-    tty: true
-    #    environment:
-    #      - AWS_ACCESS_KEY_ID
-    #      - AWS_SECRET_ACCESS_KEY
-    #      - AWS_DEFAULT_REGION
-    env_file:
-      - ./aws.env
-    entrypoint: /bin/bash
   terraform_backend_init:
     build:
       # here to specify which module is needed, default infrastructure
       # MODULE=subfolder of ./terraform
       args:
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
-        MODULE: backend
-        INITIALIZE: "yes"
+        - MODULE=backend
+        - INITIALIZE=yes
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_backend_init
@@ -73,10 +29,10 @@ services:
       # here to specify which module is needed, default infrastructure
       # MODULE=subfolder of ./terraform
       args:
-        MODULE: backend
-        AWS_ACCESS_KEY_ID
-        AWS_SECRET_ACCESS_KEY
-        AWS_DEFAULT_REGION: "us-east-1"
+        - MODULE=backend
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
       context: ./terraform
       dockerfile: Dockerfile
     container_name: terraform_backend
@@ -90,6 +46,52 @@ services:
     #      - AWS_DEFAULT_REGION
     env_file:
       - ./aws.env
+    entrypoint: /bin/sh
+  terraform_infrastructure:
+    build:
+      # here to specify which module is needed, default infrastructure
+      # MODULE=subfolder of ./terraform
+      args:
+        - MODULE=infrastructure
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+      context: ./terraform
+      dockerfile: Dockerfile
+    container_name: terraform_infrastructure
+    networks:
+      - tfnet
+    stdin_open: true
+    tty: true
+    #    environment:
+    #      - AWS_ACCESS_KEY_ID
+    #      - AWS_SECRET_ACCESS_KEY
+    #      - AWS_DEFAULT_REGION
+    env_file:
+      - ./aws.env
+    entrypoint: /bin/bash
+  terraform_lambda:
+    build:
+      args:
+        - MODULE=lambda
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+      context: ./terraform
+      dockerfile: Dockerfile
+    container_name: terraform_lambda
+    networks:
+      - tfnet
+    stdin_open: true
+    tty: true
+    #    environment:
+    #      - AWS_ACCESS_KEY_ID
+    #      - AWS_SECRET_ACCESS_KEY
+    #      - AWS_DEFAULT_REGION
+    env_file:
+      - ./aws.env
+    environment:
+      - TF_VAR_image_tag=latest
     entrypoint: /bin/bash
   lambda:
     build:

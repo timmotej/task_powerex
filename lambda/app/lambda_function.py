@@ -8,7 +8,7 @@ import urllib
 print("Loading function")
 
 s3 = boto3.client("s3")
-# source_bucket = os.getenv("SOURCE_BUCKET", "bucket_powerex_files_input")
+# source_bucket = os.getenv("SOURCE_BUCKET", "bucket-powerex-files-input")
 target_bucket = os.getenv("TARGET_BUCKET", "bucket-powerex-files-output")
 prefix = os.getenv("PREFIX", "powerex_")
 
@@ -32,11 +32,8 @@ prefix = os.getenv("PREFIX", "powerex_")
 def lambda_handler(event, context):
     print(json.dumps(event, indent=2))
     try:
-        if event["Records"][0].get("test",False):
-            return {
-                "statusCode": 200,
-                "data": "Test successful"
-            }
+        if event["Records"][0].get("test", False):
+            return {"statusCode": 200, "data": "Test successful"}
         source_bucket = event["Records"][0]["s3"]["bucket"]["name"]
         object_key = urllib.parse.unquote_plus(
             event["Records"][0]["s3"]["object"]["key"]
