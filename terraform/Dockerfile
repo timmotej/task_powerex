@@ -6,9 +6,9 @@ ARG MODULE \
     AWS_SECRET_ACCESS_KEY \
     AWS_DEFAULT_REGION \
     AWS_REGION
-RUN mkdir -p /terraform # && \
+RUN mkdir -p /terraform
     # apk add --no-cache bash vim
-ADD $MODULE /terraform
+ADD ${MODULE} /terraform
 WORKDIR /terraform
 
 RUN [ -z ${INITIALIZE} ] || ( cp backend_init main.tf && \
