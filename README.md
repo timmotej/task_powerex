@@ -89,6 +89,10 @@ The new version is released from main branch. The new version is built when ther
 
 ## Links
 
+### AWS Docker push
+
+- https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html
+
 ### Lambda AWS function
 
 - https://github.com/prabhakar2020/aws_lambda_function *structure of function*
