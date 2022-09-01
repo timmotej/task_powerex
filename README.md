@@ -97,6 +97,7 @@ The new version is released from main branch. The new version is built when ther
 
 - https://github.com/prabhakar2020/aws_lambda_function *structure of function*
 - https://stackoverflow.com/a/32504096/10895880 *for moving objects*
+- https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-images.html#get-started-invoke-function *create Lambda function with docker image*
 
 ### Terraform
 
