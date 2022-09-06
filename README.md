@@ -89,10 +89,15 @@ The new version is released from main branch. The new version is built when ther
 
 ## Links
 
+### AWS Docker push
+
+- https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html
+
 ### Lambda AWS function
 
 - https://github.com/prabhakar2020/aws_lambda_function *structure of function*
 - https://stackoverflow.com/a/32504096/10895880 *for moving objects*
+- https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-images.html#get-started-invoke-function *create Lambda function with docker image*
 
 ### Terraform
 
@@ -108,4 +113,4 @@ The new version is released from main branch. The new version is built when ther
 
 - https://faun.pub/building-s3-event-triggers-for-aws-lambda-using-terraform-1d61a05b4c97
 
-
+test
