@@ -64,7 +64,7 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Load env vars from CI pipeline
       uses: FranzDiebold/github-env-vars-action@v2
